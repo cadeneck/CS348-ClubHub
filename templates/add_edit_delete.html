@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <title>Add/Edit/Delete Meetings</title>
+</head>
+<body>
+    <h1>Add/Edit & Delete Meetings</h1>
+    <!-- Form for Adding/Editing Meeting Data -->
+    <form action="/add_edit_delete" method="post">
+        <label for="meetingID">Meeting ID:</label><br>
+        <input type="number" id="meetingID" name="meetingID" required><br>
+
+        <label for="meetingDate">Meeting Date:</label><br>
+        <input type="date" id="meetingDate" name="meetingDate" required><br>
+
+        <label for="meetingTime">Meeting Time:</label><br>
+        <input type="time" id="meetingTime" name="meetingTime" required><br>
+
+        <label for="duration">Duration (in minutes):</label><br>
+        <input type="number" id="duration" name="duration" required><br>
+
+        <label for="description">Description:</label><br>
+        <textarea id="description" name="description" required></textarea><br>
+
+        <label for="club_id">Club:</label><br>
+        <select id="club_id" name="club_id" required>
+            {% for club in clubs %}
+            <option value="{{ club.id }}">{{ club.name }}</option>
+            {% endfor %}
+        </select><br>
+
+        <label for="room_id">Room:</label><br>
+        <select id="room_id" name="room_id" required>
+            {% for room in rooms %}
+            <option value="{{ room.id }}">{{ room.building }} - {{ room.number }}</option>
+            {% endfor %}
+        </select><br>
+
+        <input type="submit" name="action" value="Add_Edit">
+    </form>
+
+    <!-- Form for Deleting Meeting Data -->
+    <h2>Delete Meeting</h2>
+    <form action="/add_edit_delete" method="post">
+        <label for="meetingID">Meeting ID:</label><br>
+        <input type="text" id="meetingID" name="meetingID" required><br>
+
+        <input type="submit" name="action" value="delete">
+    </form>
+    
+    <a href="/"><br>Back Home</a><br><br>
+    
+    <!-- Display Action Status -->
+    <text>||Action Status||</text><br>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div class="flash-message {{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+    
+</body>
+</html>

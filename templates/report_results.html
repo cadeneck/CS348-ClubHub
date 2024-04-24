@@ -1,0 +1,51 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Report Results</title>
+        <!-- Example of including Bootstrap CSS for styling -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    </head>
+    <body>
+        <div class="container mt-5">
+            <h2 class="mb-4">Report Results</h2>
+
+            <!-- Display Average Duration if available -->
+            {% if average_duration %}
+            <div class="alert alert-info" role="alert">
+                Average Meeting Duration: {{ average_duration }} minutes
+            </div>
+            {% endif %}
+
+            <!-- Meetings Table -->
+            <table class="table table-bordered">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Meeting ID</th>
+                        <th>Invited Count</th>
+                        <th>Accepted Count</th>
+                        <th>Attendance Rate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Loop through meetings_data to display each meeting's data -->
+                    {% for meeting_id, invitedCount, acceptedCount in meetings_data %}
+                    <tr>
+                        <td>{{ meeting_id }}</td>
+                        <td>{{ invitedCount }}</td>
+                        <td>{{ acceptedCount }}</td>
+                        <td>{{ (acceptedCount / invitedCount * 100) | round(2) if invitedCount > 0 else 'N/A' }}%</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4">No meeting data available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>                
+            </table>
+
+            <a href="{{ url_for('report') }}" class="btn btn-primary">Back to Report</a>
+        </div>
+    </body>
+    </html>

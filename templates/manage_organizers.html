@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <title>Manage Meeting Organizers</title>
+</head>
+<body>
+    <!-- Add elements to display the report -->
+    <h1>Manage Meeting Organizers</h1>
+    <form action="/manage_organizers" method="post">
+
+        <label for="meetingSelect">Select Meeting:</label><br>
+        <select id="meetingSelect" name="meeting_id" required>
+            {% for meeting in meetings %}
+            <option value="{{ meeting.id }}"> {{ meeting.id }}</option>
+            {% endfor %}
+        </select><br>
+
+        <label for="studentSelect">Select Student Organizer:</label><br>
+        <select id="studentSelect" name="student_id" required>
+            {% for student in students %}
+            <option value="{{ student.id }}">{{ student.name }}</option>
+            {% endfor %}
+        </select><br>
+
+        <!-- Hidden field to indicate the action (add) -->
+        <input type="hidden" name="action" value="add">
+        
+        <input type="submit" value="Add Organizer">
+    </form>
+
+    <!-- Form for Deleting Meeting Data -->
+    <h2>Delete Organizer</h2>
+    <form action="/manage_organizers" method="post">
+        <input type="hidden" name="action" value="delete">
+
+        <label for="meetingSelectDelete">Select Meeting:</label><br>
+        <select id="meetingSelectDelete" name="meeting_id" required>
+            {% for meeting in meetings %}
+            <option value="{{ meeting.id }}"> {{ meeting.id }}</option>
+            {% endfor %}
+        </select><br>
+
+        <label for="studentSelectDelete">Select Student Organizer to Delete:</label><br>
+        <select id="studentSelectDelete" name="student_id" required>
+            {% for student in students %}
+            <option value="{{ student.id }}">{{ student.name }}</option>
+            {% endfor %}
+        </select><br>
+
+    <input type="submit" value="Delete Organizer">
+    </form>
+
+    <a href="/"><br>Back Home</a><br><br>
+
+    <!-- Display Action Status -->
+    <text>||Action Status||</text><br>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash-message {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+</body>
+</html>

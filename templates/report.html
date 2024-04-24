@@ -1,0 +1,38 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+        <title>Report</title>
+    </head>
+    <body>
+    <h1>Report Interface</h1>
+        <!-- Add elements to display the report -->
+        <!-- Report Filter Form -->
+        <form action="/generate_report" method="post">
+            <label for="startDate">Start Date:</label>
+            <input type="date" id="startDate" name="startDate">
+
+            <label for="endDate">End Date:</label>
+            <input type="date" id="endDate" name="endDate">
+
+            <label for="club">Club:</label>
+            <select name="club_id">
+                {% for club in clubs %}
+                <option value="{{ club.id }}">{{ club.name }}</option>
+                {% endfor %}
+            </select>
+            
+            <label for="room">Room:</label>
+            <select name="room_id">
+                {% for room in rooms %}
+                <option value="{{ room.id }}">{{ room.building }} - {{ room.number }}</option>
+                {% endfor %}
+            </select>
+
+            <input type="submit" value="Generate Report">
+        </form>
+
+        <a href="/"><br>Return Home</a><br>
+    </body>
+    </html>

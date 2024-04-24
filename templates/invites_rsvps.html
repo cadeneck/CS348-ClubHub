@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Meeting Invitations & RSVPs</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+    <h1>Manage Meeting Invitations & RSVPs</h1>
+
+    <!-- Form to Invite People to a Meeting -->
+    <section>
+        <h2>Invite to Meeting</h2>
+        <form action="/invites_rsvps" method="post">
+            <label for="rsvpID">RSVP ID:</label><br>
+            <input type="number" id="rsvpID" name="rsvpID" required><br>
+
+            <label for="meetingSelect">Select Meeting:</label>
+            <select id="meetingSelect" name="meeting_id" required>
+                {% for meeting in meetings %}
+                <option value="{{ meeting.id }}">{{ meeting.id }}</option>
+                {% endfor %}
+            </select><br>
+
+            <label for="studentSelect">Select Student:</label>
+            <select id="studentSelect" name="student_id" required>
+                {% for student in students %}
+                <option value="{{ student.id }}">{{ student.name }}</option>
+                {% endfor %}
+            </select><br>
+            
+            <input type="submit" name="action" value="Send Invitation">
+        </form>
+    </section>
+
+    <!-- Form to Record RSVP Responses -->
+    <section>
+        <h2>Record RSVP Response</h2>
+        <form action="/invites_rsvps" method="post">
+            <label for="meetingSelectRSVP">Select Meeting:</label>
+            <select id="meetingSelectRSVP" name="meeting_id" required>
+                {% for meeting in meetings %}
+                <option value="{{ meeting.id }}">{{ meeting.id }}</option>
+                {% endfor %}
+            </select><br>
+
+            <label for="studentSelectRSVP">Select Student:</label>
+            <select id="studentSelectRSVP" name="student_id" required>
+                {% for student in students %}
+                <option value="{{ student.id }}">{{ student.name }}</option>
+                {% endfor %}
+            </select><br>
+
+            <label for="rsvpStatus">RSVP Status:</label>
+            <select id="rsvpStatus" name="rsvp_status" required>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+                <option value="maybe">Maybe</option>
+            </select><br>
+
+            <input type="submit" name="action" value="Record Response">
+        </form>
+    </section>
+
+    <!-- Form to Delete RSVPs -->
+    <section>
+        <h2>Delete RSVP</h2>
+        <form action="/invites_rsvps" method="post">
+            <label for="meetingSelectDelete">Select Meeting:</label>
+            <select id="meetingSelectDelete" name="meeting_id" required>
+                {% for meeting in meetings %}
+                <option value="{{ meeting.id }}">{{ meeting.id }}</option>
+                {% endfor %}
+            </select><br>
+
+            <label for="studentSelectDelete">Select Student:</label>
+            <select id="studentSelectDelete" name="student_id" required>
+                {% for student in students %}
+                <option value="{{ student.id }}">{{ student.name }}</option>
+                {% endfor %}
+            </select><br>
+            
+            <input type="submit" name="action" value="Delete RSVP">
+        </form>
+    </section>
+
+    <!-- Display Action Status -->
+    <a href="/"><br>Back Home</a><br><br>
+    <text>||Action Status||</text><br>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div class="flash-message {{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+</body>
+</html>
