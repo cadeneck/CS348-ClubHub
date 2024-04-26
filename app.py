@@ -58,7 +58,6 @@ class Meetings(db.Model):
     club = db.relationship('Club', backref=db.backref('meetings', lazy=True))
     room = db.relationship('Room', backref=db.backref('meetings', lazy=True))
 
-# Many-to-Many relationship table for meeting organizers
 class MeetingOrganizers(db.Model):
     meeting_id = db.Column(db.Integer, db.ForeignKey('meetings.id'), primary_key=True)
     student_id = db.Column(db.Integer, db.ForeignKey('student.id'), primary_key=True)
@@ -67,12 +66,13 @@ class MeetingOrganizers(db.Model):
 
 # RSVPs table to store student responses to meeting invitations
 class RSVPs(db.Model):
-    rsvp_id = db.Column(db.Integer, primary_key=True)
-    meeting_id = db.Column(db.Integer, db.ForeignKey('meetings.id'))
-    student_id = db.Column(db.Integer, db.ForeignKey('student.id'))
+    # Remove the rsvp_id since we will use a compound primary key
+    meeting_id = db.Column(db.Integer, db.ForeignKey('meetings.id'), primary_key=True)
+    student_id = db.Column(db.Integer, db.ForeignKey('student.id'), primary_key=True)
     status = db.Column(db.Enum(RSVPStatus))
     meeting = db.relationship('Meetings', backref=db.backref('rsvps', lazy=True))
     student = db.relationship('Student', backref=db.backref('rsvps', lazy=True))
+
 
 def initialize_database():
     # Check if the database already has entries to prevent re-initialization
@@ -349,13 +349,13 @@ def manage_organizers():
 def invites_rsvps():
     if request.method == 'POST':
         # Extract form data for RSVP actions
-        rsvp_id = request.form.get('rsvp_id')
         meeting_id = request.form.get('meeting_id')
         student_id = request.form.get('student_id')
         action = request.form.get('action')
         print('Data:', meeting_id, student_id, action)
 
         if action == 'Send Invitation':
+            # Check if an RSVP already exists for this combination of meeting_id and student_id
             rsvp = RSVPs.query.filter_by(meeting_id=meeting_id, student_id=student_id).first()
             if rsvp:
                 flash('RSVP already exists for this student.', 'warning')
@@ -364,7 +364,6 @@ def invites_rsvps():
             else:
                 # Create a new RSVP entry with a default status of 'MAYBE'
                 new_rsvp = RSVPs(
-                    rsvp_id = rsvp_id,
                     meeting_id=meeting_id,
                     student_id=student_id,
                     status=RSVPStatus.maybe  # Assuming RSVPStatus is an Enum
@@ -402,7 +401,6 @@ def invites_rsvps():
             # Delete the RSVP entry
             rsvp = RSVPs.query.filter_by(meeting_id=meeting_id, student_id=student_id).first()
             if rsvp:
-                
                 try:
                     db.session.delete(rsvp)
                     db.session.commit()
@@ -440,7 +438,7 @@ def report():
     return render_template('report.html', clubs=clubs, rooms=rooms)
 
 # Route to generate a report based on meeting data
-@app.route('/w', methods=['POST'])
+@app.route('/generate_report', methods=['POST'])
 def generate_report():
     # Use .get() to safely access form data, providing a fallback value as needed
     start_date = request.form.get('startDate')
@@ -466,7 +464,7 @@ def generate_report():
 
     meetings_with_counts = db.session.query(
         Meetings.id,
-        func.count(RSVPsAlias.rsvp_id).label('invitedCount'),
+        func.count(RSVPsAlias.student_id).label('invitedCount'),
         accepted_count
     ).join(RSVPsAlias, RSVPsAlias.meeting_id == Meetings.id, isouter=True).filter(
         Meetings.date.between(start_date, end_date),
