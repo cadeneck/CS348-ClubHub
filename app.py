@@ -6,8 +6,12 @@ from sqlalchemy.sql import func
 from sqlalchemy import case
 from datetime import datetime
 from flask import flash
+from sqlalchemy import event
 import enum
 from sqlalchemy import DDL
+from sqlalchemy import create_engine
+from sqlalchemy.engine import Engine
+
 
 
 # Create a Flask application
@@ -126,10 +130,17 @@ def add_edit_delete():
             meeting_id = request.form.get('meetingID')
             meeting = Meetings.query.get(meeting_id)
             if meeting:
-                db.session.delete(meeting)
-                db.session.commit()
-                flash('Meeting deleted successfully!', 'success')
-                print('Meeting deleted successfully!')
+
+                try:
+                    db.session.delete(meeting)
+                    db.session.commit()
+                    flash('Meeting deleted successfully!', 'success')
+                    print('Meeting deleted successfully!')
+                except Exception as e:
+                    db.session.rollback()
+                    flash('Failed to deleted. Error: ' + str(e), 'error')
+                    print('Failed to deleted. Error: ' + str(e))
+                
             else:
                 flash('Meeting not found.', 'error')
                 print('Meeting not found1.')
@@ -159,9 +170,15 @@ def add_edit_delete():
                     meeting.description = description
                     meeting.club_id = club_id
                     meeting.room_id = room_id
-                    db.session.commit()
-                    flash('Meeting updated successfully!', 'success')
-                    print('Meeting updated successfully!')
+
+                    try:
+                        db.session.commit()
+                        flash('Meeting updated successfully!', 'success')
+                        print('Meeting updated successfully!')
+                    except Exception as e:
+                        db.session.rollback()
+                        flash('Failed to update. Error: ' + str(e), 'error')
+                        print('Failed to update. Error: ' + str(e))
                 else:
                     # Meeting not found, create a new meeting instead
                     new_meeting = Meetings(
@@ -173,10 +190,19 @@ def add_edit_delete():
                         club_id=club_id,
                         room_id=room_id
                     )
-                    db.session.add(new_meeting)
-                    db.session.commit()
-                    flash('Meeting added successfully!', 'success')
-                    print('Meeting added successfully!')
+
+                    try:
+                        db.session.add(new_meeting)
+                        db.session.commit()
+                        flash('Meeting added successfully!', 'success')
+                        print('Meeting added successfully!')
+                    except Exception as e:
+                        db.session.rollback()
+                        flash('Failed to add. Error: ' + str(e), 'error')
+                        print('Failed to add. Error: ' + str(e))
+                    
+
+                    
             
         #return redirect(url_for('add_edit_delete'))
 
@@ -281,10 +307,17 @@ def manage_organizers():
                 )
                 """
             )
-            db.session.execute(stmt, {'meeting_id': meeting_id, 'student_id': student_id})
-            db.session.commit()
-            flash('Organizer added successfully!', 'success')
-            print('Organizer added successfully!')
+            
+            try:
+                db.session.execute(stmt, {'meeting_id': meeting_id, 'student_id': student_id})
+                db.session.commit()
+                flash('Organizer added successfully!', 'success')
+                print('Organizer added successfully!')
+            except Exception as e:
+                db.session.rollback()
+                flash('Failed to delete. Error: ' + str(e), 'error')
+                print('Failed to delete. Error: ' + str(e))
+            
 
         elif action == 'delete':
             # Prepared statement for deleting an organizer
@@ -293,9 +326,14 @@ def manage_organizers():
             )
             result = db.session.execute(stmt, {'meeting_id': meeting_id, 'student_id': student_id})
             if result.rowcount > 0:
-                db.session.commit()
-                flash('Organizer deleted successfully!', 'success')
-                print('Organizer deleted successfully!')
+                try:
+                    db.session.commit()
+                    flash('Organizer deleted successfully!', 'success')
+                    print('Organizer deleted successfully!')
+                except Exception as e:
+                    db.session.rollback()
+                    flash('Failed to delete. Error: ' + str(e), 'error')
+                    print('Failed to delete. Error: ' + str(e))
             else:
                 flash('Organizer not found.', 'error')
                 print('Organizer not found.')
@@ -331,8 +369,9 @@ def invites_rsvps():
                     student_id=student_id,
                     status=RSVPStatus.maybe  # Assuming RSVPStatus is an Enum
                 )
-                db.session.add(new_rsvp)
+
                 try:
+                    db.session.add(new_rsvp)
                     db.session.commit()
                     flash('Invitation sent successfully!', 'success')
                     print('Invitation sent successfully!')
@@ -363,10 +402,17 @@ def invites_rsvps():
             # Delete the RSVP entry
             rsvp = RSVPs.query.filter_by(meeting_id=meeting_id, student_id=student_id).first()
             if rsvp:
-                db.session.delete(rsvp)
-                db.session.commit()
-                flash('RSVP deleted successfully!', 'success')
-                print('RSVP deleted successfully!')
+                
+                try:
+                    db.session.delete(rsvp)
+                    db.session.commit()
+                    flash('RSVP deleted successfully!', 'success')
+                    print('RSVP deleted successfully!')
+                except Exception as e:
+                    db.session.rollback()
+                    flash('Failed to delete. Error: ' + str(e), 'error')
+                    print('Failed to delete. Error: ' + str(e))
+                
             else:
                 flash('RSVP not found.', 'error')
                 print('RSVP not found.')
