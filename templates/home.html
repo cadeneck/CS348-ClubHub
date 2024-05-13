@@ -2,15 +2,56 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <title>CS348 Project Home</title>
+    <style>
+        /* Additional inline styles for demonstration purposes */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-top: 50px;
+        }
+
+        .button-container {
+            margin-top: 30px;
+        }
+
+        .button-container a {
+            display: inline-block;
+            margin: 10px;
+            padding: 12px 24px;
+            background-color: #5e5e5e;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .button-container a:hover {
+            background-color: #676767;
+        }
+    </style>
 </head>
 <body>
     <!-- Setup all the different pages -->
-    <h1>Welcome to the CS348 Project</h1>
-    <a href="/add_edit_delete">Manage Meetings</a><br>
-    <a href="/manage_organizers">Manage Organizers</a><br>
-    <a href="/invites_rsvps">Invites & RSVPs</a><br>
-    <a href="/report">Generate Report</a>
+    <header>
+        <h1>Welcome to the CS348 Project</h1>
+    </header>
+    <main>
+        <div class="button-container">
+            <a href="/add_edit_delete">Manage Meetings</a>
+            <a href="/manage_organizers">Manage Organizers</a>
+            <a href="/invites_rsvps">Invites & RSVPs</a>
+            <a href="/report">Generate Report</a>
+        </div>
+    </main>
 </body>
 </html>
