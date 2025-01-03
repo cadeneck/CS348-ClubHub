@@ -43,3 +43,5 @@ To optimize the performance of the database queries, especially those that are f
 - **RSVPs Table**: Indexed on `(meeting_id, student_id)` to quickly access and manage RSVPs, improving responsiveness when updating or querying RSVP statuses.
 
 These indexes are critical in ensuring that the application performs efficiently even as the amount of data grows.
+
+Hello
